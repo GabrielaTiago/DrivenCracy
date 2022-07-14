@@ -16,6 +16,7 @@ async function pollPost(req, res) {
 
     await db.collection("polls").insertOne({ title, expireAt: date });
     res.sendStatus(201);
+
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
