@@ -16,7 +16,7 @@ async function pollPost(req, res) {
   try {
     const pollTitle = await db.collection("polls").findOne({ title: title });
 
-    if (pollTitle) return res.sendStatus(409);
+    if (pollTitle.title === title) return res.sendStatus(409);
 
     await db.collection("polls").insertOne({ title, expireAt: date });
 
@@ -39,7 +39,7 @@ async function pollChoices(req, res) {
 
     const choice = await db.collection("choices").findOne({ title: title });
 
-    if (choice) return res.sendStatus(409);
+    if (choice.title === title) return res.sendStatus(409);
 
     const inicialDate = Date.parse(existingPoll.expireAt);
     const currentDate = Date.parse(dayjs().format("YYYY-MM-DD HH:mm"));
