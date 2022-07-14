@@ -47,7 +47,9 @@ async function pollChoices(req, res) {
 
     if (timeDifference <= 0) return res.sendStatus(403);
 
-    await db.collection("choices").insertOne({ title, poolId });
+    await db
+      .collection("choices")
+      .insertOne({ title, poolId: ObjectId(poolId) });
     res.sendStatus(201);
   } catch (error) {
     console.error(error);
@@ -55,4 +57,35 @@ async function pollChoices(req, res) {
   }
 }
 
-export { pollPost, pollChoices };
+async function pollVote(req, res) {
+  const { id } = req.params;
+  const creationDate = dayjs().format("YYYY-MM-DD HH:mm");
+
+  try {
+    const vote = await db.collection("choices").findOne(ObjectId(id));
+
+    if (!vote) res.sendStatus(404);
+
+    const existingPoll = await db.collection("polls").findOne(ObjectId(poolId));
+
+    if (!existingPoll) return res.sendStatus(404);
+
+    const inicialDate = Date.parse(existingPoll.expireAt);
+    const currentDate = Date.parse(creationDate);
+    const timeDifference = inicialDate - currentDate;
+
+    if (timeDifference <= 0) return res.sendStatus(403);
+
+    await db.collection("vote").insertOne({
+      createdAt: creationDate,
+      choiceId: ObjectId(id),
+    });
+
+    res.sendStatus(201);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+}
+
+export { pollPost, pollChoices, pollVote };
