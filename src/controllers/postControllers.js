@@ -4,18 +4,22 @@ import dayjs from "dayjs";
 
 async function pollPost(req, res) {
   const { title, expireAt } = req.body;
+  let date = expireAt;
+
+  if (title === "") return res.sendStatus(422);
+
+  if (expireAt === "") {
+    const defaultPoll = dayjs().add("30", "day");
+    date = defaultPoll.format("YYYY-MM-DD HH:mm");
+  }
 
   try {
-    let date = expireAt;
+    const pollTitle = await db.collection("polls").findOne({ title: title });
 
-    if (title === "") return res.sendStatus(422);
-
-    if (expireAt === "") {
-      const defaultPoll = dayjs().add("30", "day");
-      date = defaultPoll.format("YYYY-MM-DD HH:mm");
-    }
+    if (pollTitle) return res.sendStatus(409);
 
     await db.collection("polls").insertOne({ title, expireAt: date });
+
     res.sendStatus(201);
   } catch (error) {
     console.error(error);
