@@ -6,7 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-		"dev": "npx nodemon server.js"
+    "dev": "npx nodemon server.js"
   },
   "keywords": [],
   "author": "Gabriela Tiago",
@@ -18,6 +18,6 @@
     "express": "^4.18.1",
     "joi": "^17.6.0",
     "mongodb": "^4.7.0",
-    "nodemon": "^2.0.19"
+    "nodemon": "^3.1.4"
   }
 }
