@@ -1,14 +1,25 @@
-import { MongoClient } from "mongodb";
-import dotenv from "dotenv";
-dotenv.config();
+import { config } from 'dotenv';
+import { MongoClient } from 'mongodb';
 
+config();
 
-const mongoClient = new MongoClient(process.env.MONGO_URI);
-let db;
+const uri = process.env.MONGO_URI;
+const databaseName = process.env.MONGO_DATABASE_NAME;
 
-mongoClient.connect(() => {
-    db = mongoClient.db(process.env.MONGO_DATABASE_NAME);
-});
+let db = null;
 
+async function connectToDatabase() {
+	try {
+		const mongoClient = new MongoClient(uri);
+		await mongoClient.connect();
+		db = mongoClient.db(databaseName);
+		console.log('Connected to MongoDB');
+	} catch (err) {
+		console.error('Error trying to connect to MongoDB: ', err);
+		throw err;
+	}
+}
+
+connectToDatabase();
 
 export { db };
