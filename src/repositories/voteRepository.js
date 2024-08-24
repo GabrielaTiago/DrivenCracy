@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb';
 import { db } from '../databases/mongodb.js';
 
-async function createVote(createdAt, id) {
+async function createVote(createdAt, choiceId) {
 	return await db.collection('vote').insertOne({
 		createdAt,
-		choiceId: ObjectId(id),
+		choiceId: new ObjectId(String(choiceId)),
 	});
 }
 
