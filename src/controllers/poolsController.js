@@ -1,30 +1,12 @@
-import dayjs from 'dayjs';
 import pollRepository from '../repositories/pollRepository.js';
 import pollsService from '../services/pollsService.js';
 
 async function createPoll(req, res) {
 	const { title, expireAt } = req.body;
-	let date = expireAt;
 
-	if (title === '') return res.sendStatus(422);
+	await pollsService.createNewPoll(title, expireAt);
 
-	if (expireAt === '') {
-		const defaultPoll = dayjs().add('30', 'day');
-		date = defaultPoll.format('YYYY-MM-DD HH:mm');
-	}
-
-	try {
-		const pollTitle = await pollRepository.getPollByTitle(title);
-
-		if (pollTitle.title === title) return res.sendStatus(409);
-
-		await pollRepository.createPoll(title, date);
-
-		res.sendStatus(201);
-	} catch (error) {
-		console.error(error);
-		res.sendStatus(500);
-	}
+	res.status(201).send({ message: 'Enquete criada com sucesso' });
 }
 
 async function getPolls(req, res) {
