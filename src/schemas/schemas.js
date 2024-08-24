@@ -1,10 +1,9 @@
-import choiceSchema from './choiceSchema';
-import poolSchema from './poolSchema';
+import choiceSchema from './choiceSchema.js';
+import poolSchema from './poolSchema.js';
 
 const schemas = {
 	choice: choiceSchema,
 	pool: poolSchema,
-	vote: voteSchema,
 };
 
 export default schemas;
