@@ -16,29 +16,9 @@ async function getChoices(req, res) {
 async function pollChoices(req, res) {
 	const { title, poolId } = req.body;
 
-	try {
-		const existingPoll = await pollRepository.getPollById(poolId);
+	await choicesService.createNewChoice(title, poolId);
 
-		if (!existingPoll) return res.sendStatus(404);
-
-		if (title === '') return res.sendStatus(422);
-
-		const choice = await choiceRepository.getChoicesByTitle(title);
-
-		if (choice) return res.sendStatus(409);
-
-		const endDate = Date.parse(existingPoll.expireAt);
-		const currentDate = Date.parse(dayjs().format('YYYY-MM-DD HH:mm'));
-		const timeDifference = endDate - currentDate;
-
-		if (timeDifference <= 0) return res.sendStatus(403);
-
-		await choiceRepository.createChoice(title, poolId);
-		res.sendStatus(201);
-	} catch (error) {
-		console.error(error);
-		res.sendStatus(500);
-	}
+	res.status(201).send({ message: 'Opção criada com sucesso' });
 }
 
 async function pollVote(req, res) {
