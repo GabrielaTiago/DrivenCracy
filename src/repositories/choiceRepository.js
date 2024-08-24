@@ -16,10 +16,17 @@ async function getChoicesByTitle(title) {
 	return await db.collection('choices').findOne({ title });
 }
 
+async function getPollIdByChoiceId(choiceId) {
+	const choice = await db.collection('choices').findOne({ _id: new ObjectId(String(choiceId)) });
+	const pollId = new ObjectId(String(choice.pollId)).toString();
+	return pollId;
+}
+
 const choiceRepository = {
 	createChoice,
 	getChoicesByTitle,
 	getChoicesByPollId,
+	getPollIdByChoiceId,
 };
 
 export default choiceRepository;
