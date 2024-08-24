@@ -8,15 +8,16 @@ export const ERRORS = {
 };
 
 class CustomError extends Error {
-	constructor(type, message) {
+	constructor(message, statusCode) {
 		super(message);
-		this.type = type;
-		this.status = ERRORS[type];
+		this.statusCode = statusCode;
+		Error.captureStackTrace(this, this.constructor);
 	}
 }
 
-export default function throwCustomError(type, message) {
-	if (!ERRORS[type]) throw new Error(`Tipo de erro inválido: ${type}`);
+const customError = (errorKey, message) => {
+	const statusCode = ERRORS[errorKey] || 500;
+	throw new CustomError(message, statusCode);
+};
 
-	throw new CustomError(type, message);
-}
+export default customError;
