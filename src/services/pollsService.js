@@ -1,7 +1,22 @@
+import dayjs from 'dayjs';
 import customError from '../errors/errors.js';
 import choiceRepository from '../repositories/choiceRepository.js';
 import pollRepository from '../repositories/pollRepository.js';
 import voteRepository from '../repositories/voteRepository.js';
+
+async function createNewPoll(title, expireAt) {
+	const pollTitle = await pollRepository.getPollByTitle(title);
+
+	if (pollTitle) customError('conflict', 'Já existe uma enquete com este título');
+
+	let date = expireAt;
+	if (date === '') {
+		const defaultPoll = dayjs().add('30', 'day');
+		date = defaultPoll.format('YYYY-MM-DD HH:mm');
+	}
+
+	await pollRepository.createPoll(title, date);
+}
 
 async function searchPollResult(pollId) {
 	const poll = await pollRepository.getPollById(pollId);
@@ -28,6 +43,7 @@ async function searchPollResult(pollId) {
 }
 
 const pollsService = {
+	createNewPoll,
 	searchPollResult,
 };
 
