@@ -1,7 +1,9 @@
+import 'express-async-errors';
 import express, { json } from 'express';
 import chalk from 'chalk';
 import cors from 'cors';
 import { config } from 'dotenv';
+import errorHandler from './middleware/errorHandler.js';
 import getRoutes from './routes/getRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 
@@ -13,6 +15,7 @@ server.use(json(), cors());
 
 server.use(postRoutes);
 server.use(getRoutes);
+server.use(errorHandler);
 
 const PORT = Number(process.env.PORT) || 5500;
 
