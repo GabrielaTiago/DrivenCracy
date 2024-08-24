@@ -1,4 +1,3 @@
-import pollRepository from '../repositories/pollRepository.js';
 import pollsService from '../services/pollsService.js';
 
 async function createPoll(req, res) {
@@ -9,14 +8,10 @@ async function createPoll(req, res) {
 	res.status(201).send({ message: 'Enquete criada com sucesso' });
 }
 
-async function getPolls(req, res) {
-	try {
-		const allPolls = await pollRepository.getPolls();
-		res.status(200).send(allPolls);
-	} catch (error) {
-		console.error(error);
-		res.sendStatus(500);
-	}
+async function getPolls(_, res) {
+	const polls = await pollsService.getAllPolls();
+
+	res.status(200).send(polls);
 }
 
 async function getResult(req, res) {
