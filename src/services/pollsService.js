@@ -18,6 +18,14 @@ async function createNewPoll(title, expireAt) {
 	await pollRepository.createPoll(title, date);
 }
 
+async function getAllPolls() {
+	const polls = await pollRepository.getPolls();
+
+	if (polls.length === 0) customError('not_found', 'Nenhuma enquete foi criada até o momento');
+
+	return polls;
+}
+
 async function searchPollResult(pollId) {
 	const poll = await pollRepository.getPollById(pollId);
 
@@ -44,6 +52,7 @@ async function searchPollResult(pollId) {
 
 const pollsService = {
 	createNewPoll,
+	getAllPolls,
 	searchPollResult,
 };
 
