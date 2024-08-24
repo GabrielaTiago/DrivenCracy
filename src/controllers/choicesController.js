@@ -1,18 +1,16 @@
+import dayjs from 'dayjs';
 import choiceRepository from '../repositories/choiceRepository.js';
 import pollRepository from '../repositories/pollRepository.js';
 import voteRepository from '../repositories/voteRepository.js';
 
+import choicesService from '../services/choicesService.js';
+
 async function getChoices(req, res) {
-	const { id } = req.params;
+	const { id: pollId } = req.params;
 
-	try {
-		const choicesForThePoll = await choiceRepository.getChoicesByPollId(id);
+	const pollChoices = await choicesService.getAllChoicesFromPoll(pollId);
 
-		res.status(200).send(choicesForThePoll);
-	} catch (error) {
-		console.error(error);
-		res.sendStatus(500);
-	}
+	res.status(200).send(pollChoices);
 }
 
 async function pollChoices(req, res) {
@@ -27,11 +25,11 @@ async function pollChoices(req, res) {
 
 		const choice = await choiceRepository.getChoicesByTitle(title);
 
-		if (choice.title === title) return res.sendStatus(409);
+		if (choice) return res.sendStatus(409);
 
-		const inicialDate = Date.parse(existingPoll.expireAt);
+		const endDate = Date.parse(existingPoll.expireAt);
 		const currentDate = Date.parse(dayjs().format('YYYY-MM-DD HH:mm'));
-		const timeDifference = inicialDate - currentDate;
+		const timeDifference = endDate - currentDate;
 
 		if (timeDifference <= 0) return res.sendStatus(403);
 
@@ -44,25 +42,25 @@ async function pollChoices(req, res) {
 }
 
 async function pollVote(req, res) {
-	const { id } = req.params;
-	const creationDate = dayjs().format('YYYY-MM-DD HH:mm');
+	const { id: choiceId } = req.params;
+	const now = dayjs().format('YYYY-MM-DD HH:mm');
 
 	try {
-		const vote = await choiceRepository.getChoiceById(id);
+		const pollId = await choiceRepository.getPollIdByChoiceId(choiceId);
 
-		if (!vote) res.sendStatus(404);
+		if (!pollId) res.sendStatus(404);
 
-		const existingPoll = await pollRepository.getPollById(vote.pollId);
+		const existingPoll = await pollRepository.getPollById(pollId);
 
 		if (!existingPoll) return res.sendStatus(404);
 
-		const inicialDate = Date.parse(existingPoll.expireAt);
-		const currentDate = Date.parse(creationDate);
-		const timeDifference = inicialDate - currentDate;
+		const endDate = Date.parse(existingPoll.expireAt);
+		const currentDate = Date.parse(now);
+		const timeDifference = endDate - currentDate;
 
 		if (timeDifference <= 0) return res.sendStatus(403);
 
-		await voteRepository.createVote(creationDate, id);
+		await voteRepository.createVote(now, choiceId);
 
 		res.sendStatus(201);
 	} catch (error) {
