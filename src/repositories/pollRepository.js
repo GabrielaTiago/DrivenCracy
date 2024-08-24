@@ -6,7 +6,7 @@ async function createPoll(title, expireAt) {
 }
 
 async function getPolls() {
-	return await db.collection('polls').find({ isActive: true }).toArray();
+	return await db.collection('polls').find({}).toArray();
 }
 
 async function getPollByTitle(title) {
