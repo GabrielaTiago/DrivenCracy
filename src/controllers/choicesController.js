@@ -1,28 +1,14 @@
-import dayjs from 'dayjs';
-
 import choiceRepository from '../repositories/choiceRepository.js';
 import pollRepository from '../repositories/pollRepository.js';
 import voteRepository from '../repositories/voteRepository.js';
 
-async function pollPost(req, res) {
-	const { title, expireAt } = req.body;
-	let date = expireAt;
-
-	if (title === '') return res.sendStatus(422);
-
-	if (expireAt === '') {
-		const defaultPoll = dayjs().add('30', 'day');
-		date = defaultPoll.format('YYYY-MM-DD HH:mm');
-	}
+async function getChoices(req, res) {
+	const { id } = req.params;
 
 	try {
-		const pollTitle = await pollRepository.getPollByTitle(title);
+		const choicesForThePoll = await choiceRepository.getChoicesByPollId(id);
 
-		if (pollTitle.title === title) return res.sendStatus(409);
-
-		await pollRepository.createPoll(title, date);
-
-		res.sendStatus(201);
+		res.status(200).send(choicesForThePoll);
 	} catch (error) {
 		console.error(error);
 		res.sendStatus(500);
@@ -85,4 +71,10 @@ async function pollVote(req, res) {
 	}
 }
 
-export { pollPost, pollChoices, pollVote };
+const choicesController = {
+	getChoices,
+	pollChoices,
+	pollVote,
+};
+
+export default choicesController;
