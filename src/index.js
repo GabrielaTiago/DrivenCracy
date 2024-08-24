@@ -4,8 +4,7 @@ import chalk from 'chalk';
 import cors from 'cors';
 import { config } from 'dotenv';
 import errorHandler from './middleware/errorHandler.js';
-import getRoutes from './routes/getRoutes.js';
-import postRoutes from './routes/postRoutes.js';
+import router from './routes/router.js';
 
 config();
 
@@ -13,8 +12,7 @@ const server = express();
 
 server.use(json(), cors());
 
-server.use(postRoutes);
-server.use(getRoutes);
+server.use(router);
 server.use(errorHandler);
 
 const PORT = Number(process.env.PORT) || 5500;
