@@ -8,8 +8,13 @@ async function createVote(createdAt, choiceId) {
 	});
 }
 
+async function getVotesQuantityByChoiceId(choiceId) {
+	return await db.collection('vote').countDocuments({ choiceId: new ObjectId(String(choiceId)) });
+}
+
 const voteRepository = {
 	createVote,
+	getVotesQuantityByChoiceId,
 };
 
 export default voteRepository;
