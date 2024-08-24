@@ -1,13 +1,11 @@
-import { ERRORS } from '../errors/errors.js';
-
-export default function errorHandler(error, req, res, next) {
-	const { type, message } = error;
-	const statusCode = ERRORS[type];
-
-	if (statusCode) {
-		return res.status(statusCode).send({ error: message });
+export default function errorHandler(err, req, res, next) {
+	try {
+		if (err instanceof Error) {
+			const { statusCode, message } = err;
+			return res.status(statusCode).send({ error: true, message });
+		}
+	} catch (error) {
+		console.error(error);
+		return res.status(500).send({ error: true, message: 'Internal Server Error' });
 	}
-
-	console.error(error);
-	res.status(500).send({ error: 'Internal Server Error 2' });
 }
