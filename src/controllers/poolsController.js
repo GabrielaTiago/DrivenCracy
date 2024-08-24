@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import { count } from '../middleware/counter.js';
 import pollRepository from '../repositories/pollRepository.js';
+import pollsService from '../services/pollsService.js';
 
 async function createPoll(req, res) {
 	const { title, expireAt } = req.body;
@@ -38,23 +38,11 @@ async function getPolls(req, res) {
 }
 
 async function getResult(req, res) {
-	const { id } = req.params;
+	const { id: pollId } = req.params;
 
-	try {
-		const poll = await pollRepository.getPollById(id);
+	const result = await pollsService.searchPollResult(pollId);
 
-		if (!poll) return res.sendStatus(404);
-
-		await pollRepository.updatePoll(id, {
-			title: poll.title,
-			votes: count,
-		});
-
-		res.sendStatus(201);
-	} catch (error) {
-		console.error(error);
-		res.sendStatus(500);
-	}
+	res.status(200).send(result);
 }
 
 const poolsController = {
