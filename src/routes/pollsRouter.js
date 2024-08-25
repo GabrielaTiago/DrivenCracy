@@ -1,16 +1,16 @@
 import { Router } from 'express';
-import poolsController from '../controllers/poolsController.js';
+import pollsController from '../controllers/pollsController.js';
 import choicesController from '../controllers/choicesController.js';
 import schemasValidation from '../middleware/schemasValidation.js';
 
-const { createPoll, getPolls, getResult } = poolsController;
-const { getChoices } = choicesController;
+const { createNewPoll, getAllPolls, searchPollResult } = pollsController;
+const { getAllChoicesFromThePoll } = choicesController;
 
 const poolsRouter = Router();
 
-poolsRouter.get('/poll', getPolls);
-poolsRouter.post('/poll', schemasValidation('pool'), createPoll);
-poolsRouter.get('/poll/:id/choice', getChoices);
-poolsRouter.get('/poll/:id/result', getResult);
+poolsRouter.get('/poll', getAllPolls);
+poolsRouter.post('/poll', schemasValidation('pool'), createNewPoll);
+poolsRouter.get('/poll/:id/choice', getAllChoicesFromThePoll);
+poolsRouter.get('/poll/:id/result', searchPollResult);
 
 export default poolsRouter;
