@@ -5,6 +5,10 @@ import pollRepository from '../repositories/pollRepository.js';
 import voteRepository from '../repositories/voteRepository.js';
 
 async function createNewPoll(title, expireAt) {
+	const today = new Date();
+	const isPastDate = dayjs(today).isAfter(dayjs(expireAt));
+	if (isPastDate) customError('forbidden', 'Data de expiração inválida');
+
 	const pollTitle = await pollRepository.getPollByTitle(title);
 
 	if (pollTitle) customError('conflict', 'Já existe uma enquete com este título');
