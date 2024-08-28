@@ -5,8 +5,7 @@ const poolSchema = joi.object({
         'string.empty': 'O valor de title não é permitido ser vazio',
         'any.required': 'O campo title é obrigatório',
     }),
-    expireAt: joi.date().required().messages({
-        'date.base': 'O campo expireAt deve ser uma data válida',
+    expireAt: joi.string().trim().allow('').required().messages({
         'any.required': 'O campo expireAt é obrigatório',
     }),
 });
