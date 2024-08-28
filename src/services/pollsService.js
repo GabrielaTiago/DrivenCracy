@@ -5,6 +5,15 @@ import pollRepository from '../repositories/pollRepository.js';
 import voteRepository from '../repositories/voteRepository.js';
 
 async function createNewPoll(title, expireAt) {
+	let date;
+	if (title !== '') {
+		const validDate = dayjs(expireAt).isValid();
+		if (!validDate) customError('forbidden', 'Formato de data inválido');
+	} else {
+		const defaultPoll = dayjs().add('30', 'day');
+		date = defaultPoll.format('YYYY-MM-DD HH:mm');
+	}
+
 	const today = new Date();
 	const isPastDate = dayjs(today).isAfter(dayjs(expireAt));
 	if (isPastDate) customError('forbidden', 'Data de expiração inválida');
@@ -12,12 +21,6 @@ async function createNewPoll(title, expireAt) {
 	const pollTitle = await pollRepository.getPollByTitle(title);
 
 	if (pollTitle) customError('conflict', 'Já existe uma enquete com este título');
-
-	let date = expireAt;
-	if (date === '') {
-		const defaultPoll = dayjs().add('30', 'day');
-		date = defaultPoll.format('YYYY-MM-DD HH:mm');
-	}
 
 	await pollRepository.createPoll(title, date);
 }
